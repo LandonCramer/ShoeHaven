@@ -24,6 +24,8 @@ class User(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
+    sneakers = db.relationship('Sneaker', secondary='user_sneakers', back_populates='users')
+
     def __repr__(self):
         """
         returns string rep of object
@@ -45,20 +47,22 @@ class Sneaker(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     brand = db.Column(db.String)
-    model = db.Column(db.String)
-    size = db.Column(db.String)
+    name= db.Column(db.String)
+    color = db.Column(db.String)
     description = db.Column(db.String)
     price = db.Column(db.Float)
+    image = db.Column(db.String)
+    link = db.Column(db.String)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
-    users = db.relationship('User', secondary='user_sneakers')
-    carts = db.relationship('Cart', secondary='cart_items')
+    users = db.relationship('User', secondary='user_sneakers', back_populates='sneakers')
+    carts = db.relationship('Cart', secondary='cart_items', back_populates='sneakers')
 
 
 
     def __repr__(self):
-        return f"<Sneaker {self.model} >"
+        return f"<Sneaker {self.name} >"
 
     def save(self):
         """
@@ -67,7 +71,7 @@ class Sneaker(db.Model):
 
         :param self: Refer to the current instance of the class
         :return: The object that was just saved
-        :doc-author:jod35
+       
         """
         db.session.add(self)
         db.session.commit()
@@ -78,34 +82,34 @@ class Sneaker(db.Model):
 
         :param self: Refer to the current instance of the class, and is used to access variables that belongs to the class
         :return: Nothing
-        :doc-author:jod35
+        
         """
         db.session.delete(self)
         db.session.commit()
 
-    def update(self, brand, model, size, description, price):
+    def update(self, brand, name, color, description, price, image, link):
         """
-        The update function updates the title and description of a given blog post.
-        It takes two parameters, title and description.
+        The update function updates the title and description of a sneaker.
+        It takes fice parameters.
 
         :param self: Access variables that belongs to the class
-        :param title: Update the title of the post
-        :param description: Update the description of the blog post
-        :return: A dictionary with the updated values of title and description
-        :doc-author:jod35
+        :param name: Update the name of the shoe
+        :param color: Update color of shoe
+        :param price: Update price of shoe
+        :param description: Update the description of the shoe 
+        :param link: Update link
+        :return: A dictionary with the updated values of brand, model, size, description and price of given shoe.
+        
         """
         self.brand = brand
-        self.model = model
-        self.size = size
+        self.name = name
+        self.color = color
         self.description = description
         self.price = price
+        self.image = image
+        self.link = link
 
         db.session.commit()
-
-
-
-
-
 
 
 
@@ -132,7 +136,8 @@ class Cart(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
-    items = db.relationship('Sneaker', secondary='cart_items')
+    items = db.relationship('Sneaker', secondary='cart_items', back_populates='carts')
+    sneakers = db.relationship('Sneaker', secondary='cart_items', back_populates='carts')
 
 class CartItem(db.Model):
     __tablename__ = 'cart_items'
