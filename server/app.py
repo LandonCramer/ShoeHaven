@@ -12,20 +12,22 @@ db.init_app(app)
 
 api=Api(app,doc='/docs')
 
-# model serializer
+# model serializer, formats into JSON so we can use in the front end.
 sneaker_model=api.model(
     "Sneaker",
     {
         "id":fields.Integer(),
         "brand":fields.String(),
-        "model":fields.String(),
-        "size":fields.String(),
+        "name":fields.String(),
+        "color":fields.String(),
         "description":fields.String(),
-        "price":fields.Float()
+        "price":fields.Float(),
+        "image": fields.String(),
+        "link":fields.String()
     }
 )
 
-@api.route('/hell0')
+@api.route('/hello')
 class HelloResource(Resource):
     def get(self):
         return {"message": "Hello World"}
@@ -40,7 +42,7 @@ class SneakersResource(Resource):
         sneakers = Sneaker.query.all()
 
         return sneakers
-    @api.marshal_list_with(sneaker_model)
+    @api.marshal_with(sneaker_model)
     def post(self):
         """ Create a new sneaker"""
         
@@ -48,10 +50,12 @@ class SneakersResource(Resource):
 
         new_sneaker=Sneaker(
             brand=data.get('brand'),
-            model=data.get('model'),
-            size=data.get('size'),
+            name=data.get('name'),
+            color=data.get('color'),
             description=data.get('description'),
-            price=data.get('price')
+            price=data.get('price'),
+            image=data.get('image'),
+            link=data.get('link')
         )
         new_sneaker.save()
 
@@ -75,7 +79,7 @@ class SneakerResource(Resource):
         sneaker_to_update = Sneaker.query.get_or_404(id)
         data = request.get_json()
 
-        sneaker_to_update.update(data.get('brand'), data.get('model'), data.get('size'), data.get('description'), data.get('price'))
+        sneaker_to_update.update(data.get('brand'), data.get('name'), data.get('color'), data.get('description'), data.get('price'), data.get('image'), data.get('link'))
 
         return sneaker_to_update
     
