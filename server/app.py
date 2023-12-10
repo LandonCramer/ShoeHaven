@@ -197,7 +197,7 @@ class SneakerResource(Resource):
 # model (serializer)
 @app.shell_context_processor
 def make_shell_context():
-    return {"db": db, "Sneaker": Sneaker}
+    return {"db": db, "Sneaker": Sneaker, "User": User}
 
 
 # Members API Route-setup
