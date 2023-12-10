@@ -109,6 +109,7 @@ class Login(Resource):
             
             return jsonify({"access_token":access_token, "refresh_token":refresh_token})
 
+
 #This is our refresh token
 @api.route("/refresh")
 class RefreshResource(Resource):

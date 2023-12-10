@@ -15,7 +15,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS=config('SQLALCHEMY_TRACK_MODIFICATIONS',cast=bool)
 
 class DevConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI", "sqlite:///dev.db")
+    SQLALCHEMY_DATABASE_URI = "sqlite:///dev.db"
     DEBUG = True
     #for development fig
     SQLALCHEMY_ECHO=True
@@ -33,7 +33,7 @@ class ProdConfig(Config):
     SQLALCHEMY_ECHO = os.getenv("ECHO", False)
     SQLALCHEMY_TRACK_MODIFICATIONS = os.getenv("SQLALCHEMY_TRACK_MODIFICATIONS", False)
 
-
+#adding this database test.db for testing unit tests. Not usin right now
 class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///test.db"
     SQLALCHEMY_ECHO = False
