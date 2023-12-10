@@ -15,7 +15,7 @@ class User(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(25), nullable=False, unique=True)
     email = db.Column(db.String(80), nullable=False)
-    password = db.Column(db.Text(), nullable=False)
+    password = db.Column(db.String(), nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
@@ -51,8 +51,8 @@ class Sneaker(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
-    users = db.relationship('User', secondary='user_sneakers', back_populates='sneakers')
-    carts = db.relationship('Cart', secondary='cart_items', back_populates='sneakers')
+    users = db.relationship('User', secondary='user_sneakers', back_populates='sneakers', overlaps="items")
+    carts = db.relationship('Cart', secondary='cart_items', back_populates='sneakers', overlaps="items")
 
 
 
@@ -131,8 +131,8 @@ class Cart(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
-    items = db.relationship('Sneaker', secondary='cart_items', back_populates='carts')
-    sneakers = db.relationship('Sneaker', secondary='cart_items', back_populates='carts')
+    items = db.relationship('Sneaker', secondary='cart_items', back_populates='carts', overlaps="items")
+    sneakers = db.relationship('Sneaker', secondary='cart_items', back_populates='carts', overlaps="items")
 
 class CartItem(db.Model):
     __tablename__ = 'cart_items'
