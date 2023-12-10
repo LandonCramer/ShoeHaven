@@ -1,9 +1,14 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify, make_response
 from flask_restx import Api, Resource, fields
 from config import DevConfig
-from models import Sneaker
+from models import Sneaker, User
 from exts import db
 from flask_migrate import Migrate
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token,get_jwt_identity, jwt_required  
+
+
+# 'pbkdf2:sha256:600000$fPr80Ucsm48KZZ8E$a4dd6c1f35412884a2fe620f2a1683adaa5ec2359a075befb2305362b36965a2'
 
 # creating Flask instance
 app = Flask(__name__)
@@ -12,6 +17,7 @@ app.config.from_object(DevConfig)
 db.init_app(app)
 
 migrate = Migrate(app, db)
+JWTManager(app)
 
 api = Api(app, doc="/docs")
 
@@ -30,11 +36,90 @@ sneaker_model = api.model(
     },
 )
 
+signup_model=api.model(
+    "SignUp",
+    {
+        "username":fields.String(),
+        "email":fields.String(),
+        "password":fields.String()
+    }
+)
+
+login_model=api.model(
+    'Login',
+    {
+        'username':fields.String(),
+        'password':fields.String()
+    }
+)
+
 
 @api.route("/hello")
 class HelloResource(Resource):
     def get(self):
         return {"message": "Hello World"}
+
+
+
+@api.route('/signup')
+class SignUp(Resource):
+    #not this decorator helps us to expect data and serialize
+    @api.expect(signup_model)
+    def post(self):
+        #accsess data from client
+        data = request.get_json()
+        #checking if user exists
+        username =data.get('username')
+        #creating a database query to check if the user exists
+        db_user = User.query.filter_by(username=username).first()
+
+        if db_user is not None:
+            return jsonify({"message":f"User with username {username} already exists"})
+
+        new_user=User(
+            username=data.get('username'),
+            email=data.get('email'),
+            #hashing password with Werkzeug function, get data from client and hash it
+            password=generate_password_hash(data.get('password'))
+        )
+        #created a convenience method in models to add current object to data base session 
+        new_user.save()
+
+       
+        return make_response(jsonify({"message": "User created successfuly"}), 201)
+
+@api.route('/login')
+class Login(Resource):
+
+    @api.expect(login_model)
+    def post(self):
+        data=request.get_json()
+
+        username=data.get('username')
+        password=data.get('password')
+        
+        #if username is equal to the username get first obj
+        db_user=User.query.filter_by(username=username).first()
+
+        #if user exists check password hash then password
+        if db_user and check_password_hash(db_user.password, password):
+
+            access_token=create_access_token(identity=db_user.username)
+            refresh_token=create_refresh_token(identity=db_user.username)
+            
+            return jsonify({"access_token":access_token, "refresh_token":refresh_token})
+
+#This is our refresh token
+@api.route("/refresh")
+class RefreshResource(Resource):
+    @jwt_required(refresh=True)
+    def post(self):
+        current_user = get_jwt_identity()
+        new_access_token = create_access_token(identity=current_user)
+        return make_response(jsonify({"access_token": new_access_token}), 200)
+
+
+
 
 
 @api.route("/sneakers")
