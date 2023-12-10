@@ -7,7 +7,6 @@ from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token,get_jwt_identity, jwt_required  
 
-
 # 'pbkdf2:sha256:600000$fPr80Ucsm48KZZ8E$a4dd6c1f35412884a2fe620f2a1683adaa5ec2359a075befb2305362b36965a2'
 
 # creating Flask instance
@@ -133,6 +132,8 @@ class SneakersResource(Resource):
         return sneakers
 
     @api.marshal_with(sneaker_model)
+    @api.expect(sneaker_model)
+    @jwt_required()
     def post(self):
         """Create a new sneaker"""
 
@@ -162,6 +163,7 @@ class SneakerResource(Resource):
         return sneaker
 
     @api.marshal_with(sneaker_model)
+    @jwt_required()
     def put(self, id):
         """Update shoe by id"""
 
@@ -181,6 +183,7 @@ class SneakerResource(Resource):
         return sneaker_to_update
 
     @api.marshal_with(sneaker_model)
+    @jwt_required()
     def delete(self, id):
         """Delete shoe by id"""
 
