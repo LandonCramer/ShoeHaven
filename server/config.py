@@ -38,3 +38,6 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///test.db"
     SQLALCHEMY_ECHO = False
     TESTING = True
+
+
+    #pushup
