@@ -6,12 +6,14 @@ from exts import db
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token,get_jwt_identity, jwt_required  
-
+from flask_cors import CORS
 # 'pbkdf2:sha256:600000$fPr80Ucsm48KZZ8E$a4dd6c1f35412884a2fe620f2a1683adaa5ec2359a075befb2305362b36965a2'
 
 # creating Flask instance
 app = Flask(__name__)
 app.config.from_object(DevConfig)
+
+CORS(app)
 
 db.init_app(app)
 

@@ -108,6 +108,16 @@ class Sneaker(db.Model):
 
 
 
+#create add to cart button on shoe
+#post request to backend with info of shoe
+#get by id request to my shoe table
+#check if sneaker is in cart
+#if it is increment quantity by 1
+#else
+#get cartid update cart_item
+#update the cart_item table with sneaker
+#and update the updated_at in the cart
+#
 
 
 
