@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React from 'react'
 import {Form, Button} from 'react-bootstrap'
 import {Link} from 'react-router-dom'
 import {useForm} from 'react-hook-form'
@@ -22,7 +22,7 @@ const LoginPage = () => {
             },
             body:JSON.stringify(data)
         }
-        fetch('/login', requestOptions)
+        fetch('http://127.0.0.1:5000/login', requestOptions)
         .then(res => res.json())
         .then(data => {
             console.log(data.access_token)
@@ -50,7 +50,7 @@ const LoginPage = () => {
                 <br></br>
                 <Form.Group>
                     <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Your password" 
+                    <Form.Control type="password" placeholder="Your password"
                     {...register('password', {required:true,minLength:8})}
                     />
                 </Form.Group>

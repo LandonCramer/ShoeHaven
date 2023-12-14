@@ -3,7 +3,7 @@ import ErrorPage from "./components/ErrorPage"
 import Home from "./components/Home"
 import Login from "./components/Login"
 import SignUp from "./components/SignUp"
-import Sneaker from "./components/Sneaker"
+import CreateSneaker from "./components/CreateSneaker"
 import SneakerView from "./components/SneakerView"
 
 
@@ -30,7 +30,7 @@ const routes = [
         },
         {
             path:'/sneaker',
-            element:<Sneaker />
+            element:<CreateSneaker />
         },
         {
             path:'/sneaker/:id',

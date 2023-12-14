@@ -133,6 +133,14 @@ class UserSneaker(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
+
+
+
+
+
+
+
+
 class Cart(db.Model):
     __tablename__ = 'carts'
     
