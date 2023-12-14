@@ -1,9 +1,10 @@
 // We are getting all sneakers from homepg, and rendering them on the homepage
 import React from 'react';
 // import { useState, useEffect } from 'react';
-import { Card, Button} from 'react-bootstrap'
+import { Card, Button, Modal} from 'react-bootstrap'
 
-function ShopCard({image, name, color, link, description, price, id, brand, cartItem, setCartItem}) {
+
+function ShopCard({image, name, color, link, description, price, id, brand, cartItem, setCartItem, onClick, onDelete}) {
   
     let shopImage = image
     let shopName = name
@@ -58,6 +59,9 @@ function ShopCard({image, name, color, link, description, price, id, brand, cart
              {"Add to Cart"} </Button>
             <br/>
             <br/>
+            <Button variant='primary' onClick={()=>onClick(id)}>Update</Button>
+            {' '}
+            <Button variant='primary' style={{backgroundColor:'red'}} onClick={onDelete}>Delete</Button>
         </Card.Body>
       </Card>    
   
