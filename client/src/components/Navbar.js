@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {useAuth} from '../auth'
+import {useAuth, logout} from '../auth'
 
 
 const LoggedInLinks=()=> {
@@ -18,9 +18,9 @@ const LoggedInLinks=()=> {
           </li>
           
         <li className="nav-item">
-            <Link className="nav-link active">
+            <a className="nav-link active" href="#" onClick={()=>logout()}>
               Log Out
-            </Link>
+            </a>
           </li>
         </>
     )
@@ -29,6 +29,11 @@ const LoggedInLinks=()=> {
 const LoggedOutLinks=()=> {
     return (
         <>
+        <li className="nav-item active">
+            <Link className="nav-link active" to="/">
+              Home
+            </Link>
+          </li>
         <li className="nav-item">
             <Link className="nav-link active" to="/signup" >
               Sign Up
@@ -64,7 +69,7 @@ const NavBar = () => {
       </button>
       <div className="collapse navbar-collapse" id="navbarNav">
       <ul className="navbar-nav">
-                        {logged?<LoggedInLinks/>:<LoggedOutLinks/>}
+                        {logged?<LoggedInLinks />:<LoggedOutLinks />}
                     </ul>
       </div>
     </nav>
