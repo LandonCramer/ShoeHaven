@@ -1,35 +1,47 @@
-import React from 'react'
+import React, {useState,useContext} from 'react'
 import {Form, Button} from 'react-bootstrap'
 import {Link} from 'react-router-dom'
 import {useForm} from 'react-hook-form'
 import {login} from '../auth'
 import { useNavigate } from "react-router-dom";
+import { UserContext } from '../context/UserContext'
 
 const LoginPage = () => {
-    
+    const [user, setUser]=useState({})
+    const {handleSetUser} = useContext(UserContext)
     const {register, handleSubmit, reset, formState:{errors}}=useForm()
     
     // this will help us go to another page
     const navigate = useNavigate()
 
     const loginUser=(data)=> {
-        console.log(data)
-
+        console.log("data from login", data)
+        
         const requestOptions={
             method:"POST",
             headers:{
-                'content-type':'application/json'
+                'Content-Type':'application/json'
             },
             body:JSON.stringify(data)
         }
-        fetch('http://127.0.0.1:5000/login', requestOptions)
-        .then(res => res.json())
-        .then(data => {
-            console.log(data.access_token)
-            login(data.access_token)
-            navigate('/')
+        fetch('/login', requestOptions)
+        .then(res=>{
+            console.log(res)
+        if (res.ok) {
+            res.json()
+            .then(resObj=>{
+              localStorage.setItem("accessToken",resObj.access_token)
+              localStorage.setItem("refreshToken",resObj.refresh_token)
+              login(resObj.access_token)
+              // handleSetUser(resObj.db_user)
+              navigate('/')
+            })
+          } else{
+            res.json().then(errObj=>alert(errObj.message))
+          }
         })
-        reset()
+        
+        
     }
 
     return (

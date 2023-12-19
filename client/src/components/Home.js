@@ -4,15 +4,22 @@ import { useAuth } from "../auth";
 import ShopCard from "./SneakerCard";
 import {Modal, Form, Button, InputGroup} from "react-bootstrap"
 import {useForm} from 'react-hook-form'
+import CartPage from './Cart'
+// const userId = JSON.parse(localStorage.getItem('UserId')) || 0;
+
+// console.log(userId)
 
 const LoggedinHome = () => {
   const [sneakers, setSneakers] = useState([]);
   const [show, setShow] = useState(false)
-  const {register,reset, handleSubmit, setValue, formState:{errors}}=useForm()
+  const {register, reset, handleSubmit, setValue, formState:{errors}}=useForm()
   const [sneakerId, setSneakerId]=useState(0)
+//   const [cartId, setCartId] = useState(0)
+//   const [cart, setCart] = useState([])
+//   console.log('Initial cart state:', cart);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/sneakers")
+    fetch("/sneakers")
       .then((res) => res.json())
       .then((data) => {
         setSneakers(data);
@@ -21,7 +28,7 @@ const LoggedinHome = () => {
   }, []);
 
 const getAllSneakers=()=>{
-    fetch("http://127.0.0.1:5000/sneakers")
+    fetch("/sneakers")
       .then((res) => res.json())
       .then((data) => {
         setSneakers(data);
@@ -41,7 +48,7 @@ const getAllSneakers=()=>{
         (sneaker)=>{
             if(sneaker.id === id){
                 setValue('name',sneaker.name)
-                setValue('color',sneaker.corlor)
+                setValue('color',sneaker.color)
                 setValue('brand',sneaker.brand)
                 setValue('price',sneaker.price)
                 setValue('image',sneaker.image)
@@ -65,7 +72,7 @@ const getAllSneakers=()=>{
         },
         body:JSON.stringify(data)
     }
-    fetch(`http://127.0.0.1:5000/sneaker/${sneakerId}`, requestOptions)
+    fetch(`sneaker/${sneakerId}`, requestOptions)
     .then(res =>res.json())
     .then(data=>{
         console.log(data)
@@ -86,8 +93,7 @@ const getAllSneakers=()=>{
         },
     }
    
-
-    fetch(`http://127.0.0.1:5000/sneaker/${id}`, requestOptions)
+    fetch(`/sneaker/${id}`, requestOptions)
     .then(res=>res.json())
     .then(data=>{
         console.log(data)
@@ -96,8 +102,104 @@ const getAllSneakers=()=>{
     .catch(err=>console.log(err))
   }
 
-  const sneakerArr = [sneakers];
-  console.log(sneakerArr);
+
+
+
+
+
+
+
+
+//I need to get the cartId
+//   useEffect(() => {
+//     //checkLogin()
+//     fetch(`http://localhost:5000/users/${userId}/my_cart`)
+//     .then(res => res.json())
+//     .then(data => {
+//       if (data.id) {
+//         localStorage.setItem("cartId", data.id)
+//         setCartId(data.id)
+//       } else {
+//         localStorage.clear()
+//       }
+//     })
+//   }, [userId]);
+
+  
+
+
+
+
+
+//   const sneakerArr = [sneakers];
+//   console.log(sneakerArr);
+
+
+// const addShoesToCart=(newShoe)=> {
+//     let isPresent = false
+//     cart.forEach((product) =>{
+//         if(newShoe.id === product.id)
+//         isPresent = true
+//     })
+//     if(isPresent)
+//         return
+//         setCart((prevCart)=>[...prevCart, newShoe])
+
+//     // getting my data from sneakerCard of shoe that should ve added to cart.
+    
+
+//     const token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
+//     console.log(token)
+    
+    
+//     const addToCart = JSON.stringify({
+//         sneakerid:newShoe.id,
+//         quantity:1
+//     })
+//     console.log("adding to cart", addToCart)
+
+//     const requestOptions = {
+//         method: "POST",
+//         headers:{
+//           'content-type': 'application/json',
+//           'Authorization': `Bearer ${JSON.parse(token)}`
+//         },
+//         body:JSON.stringify(addToCart)
+//       }
+      
+//       fetch('http://127.0.0.1:5000/cartItem', requestOptions)
+//           .then(res => res.json())
+//           .then(data => {
+//               console.log(data)
+//             //   reset()
+//           })
+//           .catch(err => console.log(err))
+//     }
+  
+  
+  
+//  const shoeCard = cart.map((shoe)=> (
+//     <CartPage
+//     key={shoe.id}
+//     id={shoe.id}
+//     brand={shoe.brand}
+//     name={shoe.name}
+//     color={shoe.color}
+//     description={shoe.description}
+//     price={shoe.price}
+//     image={shoe.image}
+//     link={shoe.link}
+//     // setCartItem={addShoesToCart}
+//     // onClick={showModal}
+
+//     // onDelete={()=>{deleteSneaker(shoe.id)}}
+//   />
+//  ))
+
+
+
+
+
 
   const storeFront = sneakers.map((shoe) => (
     <ShopCard
@@ -110,7 +212,9 @@ const getAllSneakers=()=>{
       price={shoe.price}
       image={shoe.image}
       link={shoe.link}
+    //   setCartItem={addShoesToCart}
       onClick={showModal}
+      
 
       onDelete={()=>{deleteSneaker(shoe.id)}}
     />
@@ -118,6 +222,7 @@ const getAllSneakers=()=>{
 
   return (
     <div className="sneakers">
+        
         <Modal
             show={show}
             size="lg"
@@ -275,7 +380,13 @@ const getAllSneakers=()=>{
             </Modal.Body>
         </Modal>
       <h1>List of Sneakers: ShoeHaven Logged In</h1>
+      {/* test button for stripe payment */}
+      <form action="/create-checlout-session" method="post">
+          <button type="submit" id="checkout-button">Checkout</button>
+        </form>
       {storeFront}
+      {/* {shoeCard}  */}
+       
     </div>
   );
 };

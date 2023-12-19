@@ -3,14 +3,11 @@ from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
-
-
-
-
+from flask_migrate import Migrate
 
 
 class User(db.Model, SerializerMixin):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(25), nullable=False, unique=True)
@@ -19,7 +16,14 @@ class User(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
-    sneakers = db.relationship('Sneaker', secondary='user_sneakers', back_populates='users')
+    user_sneakers = db.relationship("UserSneaker", back_populates="user")
+    # sneakers = association_proxy("user_sneakers", "sneaker")
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+        }
 
     def __repr__(self):
         """
@@ -32,17 +36,13 @@ class User(db.Model, SerializerMixin):
         db.session.add(self)
         db.session.commit()
 
-    
-
-
-
 
 class Sneaker(db.Model):
-    __tablename__ = 'sneakers'
-    
+    __tablename__ = "sneakers"
+
     id = db.Column(db.Integer, primary_key=True)
     brand = db.Column(db.String)
-    name= db.Column(db.String)
+    name = db.Column(db.String)
     color = db.Column(db.String)
     description = db.Column(db.String)
     price = db.Column(db.Float)
@@ -51,10 +51,9 @@ class Sneaker(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
-    users = db.relationship('User', secondary='user_sneakers', back_populates='sneakers', overlaps="items")
-    carts = db.relationship('Cart', secondary='cart_items', back_populates='sneakers', overlaps="items")
-
-
+    user_sneakers = db.relationship("UserSneaker", back_populates="sneaker")
+    cart_sneakers = db.relationship("CartSneaker", back_populates="sneaker")
+   
 
     def __repr__(self):
         return f"<Sneaker {self.name} >"
@@ -66,7 +65,7 @@ class Sneaker(db.Model):
 
         :param self: Refer to the current instance of the class
         :return: The object that was just saved
-       
+
         """
         db.session.add(self)
         db.session.commit()
@@ -77,7 +76,7 @@ class Sneaker(db.Model):
 
         :param self: Refer to the current instance of the class, and is used to access variables that belongs to the class
         :return: Nothing
-        
+
         """
         db.session.delete(self)
         db.session.commit()
@@ -91,10 +90,10 @@ class Sneaker(db.Model):
         :param name: Update the name of the shoe
         :param color: Update color of shoe
         :param price: Update price of shoe
-        :param description: Update the description of the shoe 
+        :param description: Update the description of the shoe
         :param link: Update link
         :return: A dictionary with the updated values of brand, model, size, description and price of given shoe.
-        
+
         """
         self.brand = brand
         self.name = name
@@ -107,57 +106,51 @@ class Sneaker(db.Model):
         db.session.commit()
 
 
-
-#create add to cart button on shoe
-#post request to backend with info of shoe
-#get by id request to my shoe table
-#check if sneaker is in cart
-#if it is increment quantity by 1
-#else
-#get cartid update cart_item
-#update the cart_item table with sneaker
-#and update the updated_at in the cart
+# create add to cart button on shoe
+# post request to backend with info of shoe
+# get by id request to my shoe table
+# check if sneaker is in cart
+# if it is increment quantity by 1
+# else
+# get cartid update cart_item
+# update the cart_item table with sneaker
+# and update the updated_at in the cart
 #
 
 
-
-
-
-
-
 class UserSneaker(db.Model):
-    __tablename__ = 'user_sneakers'
-
-    userid = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    sneakerid = db.Column(db.Integer, db.ForeignKey('sneakers.id'), primary_key=True)
+    __tablename__ = "user_sneakers"
+    # user_id has a foreignkey thay references parent users.id
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    sneakerid = db.Column(db.Integer, db.ForeignKey("sneakers.id"), primary_key=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
-
-
-
-
-
-
+    user = db.relationship("User", back_populates="user_sneakers")
+    sneaker = db.relationship("Sneaker", back_populates="user_sneakers")
 
 
 class Cart(db.Model):
-    __tablename__ = 'carts'
-    
+    __tablename__ = "carts"
+
     id = db.Column(db.Integer, primary_key=True)
-    userid = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
-    items = db.relationship('Sneaker', secondary='cart_items', back_populates='carts', overlaps="items")
-    sneakers = db.relationship('Sneaker', secondary='cart_items', back_populates='carts', overlaps="items")
+    cart_sneakers = db.relationship("CartSneaker", back_populates="cart")
+   
 
-class CartItem(db.Model):
-    __tablename__ = 'cart_items'
+class CartSneaker(db.Model):
+    __tablename__ = "cart_sneakers"
 
     id = db.Column(db.Integer, primary_key=True)
-    cartid = db.Column(db.Integer, db.ForeignKey('carts.id'))
-    sneakerid = db.Column(db.Integer, db.ForeignKey('sneakers.id'))
+    cart_id = db.Column(db.Integer, db.ForeignKey("carts.id"))
+    sneaker_id = db.Column(db.Integer, db.ForeignKey("sneakers.id"))
     quantity = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
+
+    
+    cart = db.relationship("Cart", back_populates="cart_sneakers")
+    sneaker = db.relationship('Sneaker', back_populates='cart_sneakers')

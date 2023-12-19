@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import {useAuth, logout} from '../auth'
+import '../styles/Navbar.css'
 
 
 const LoggedInLinks=()=> {
@@ -17,11 +18,18 @@ const LoggedInLinks=()=> {
             </Link>
           </li>
           
+          <li className="nav-item">
+            <Link className="nav-link active" to="/cart">
+              Cart
+            </Link>
+          </li>
+        
         <li className="nav-item">
             <a className="nav-link active" href="#" onClick={()=>logout()}>
               Log Out
             </a>
           </li>
+          
         </>
     )
 }

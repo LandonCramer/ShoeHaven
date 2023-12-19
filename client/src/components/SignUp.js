@@ -1,14 +1,14 @@
-import React from "react";
+import React,{useContext} from "react";
 import { Form, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-
+import { UserContext } from "../context/UserContext";
 const SignUpPage = () => {
   // const [username, setUsername] = useState('')
   // const [email, setEmail] = useState('')
   // const [password, setPassword] = useState('')
   // const [confirmPassword, setConfirmPassword] = useState('')
-
+const {handleSetUser} = useContext(UserContext)
 const {
     register,
     handleSubmit,
@@ -33,9 +33,24 @@ const submitForm = (data) => {
     }
 
     fetch("/signup", requestOptions)
-    .then(res=>res.json())
-    .then(data=>console.log(data))
-    .catch(err=>console.log(err))
+    .then(res=>{
+      if (res.ok) {
+        res.json()
+        .then(resObj=>{
+          localStorage.setItem("accessToken",resObj.access_token)
+          localStorage.setItem("refreshToken,",resObj.refresh_token)
+          // changed handleSet user from (db_user)
+          // console.log(resObj.new_user)
+          // handleSetUser("userId",resObj.new_user)
+
+        })
+      } else{
+        res.json().then(errObj=>alert(errObj.message))
+      }
+    })
+    // .then(res=>res.json())
+    // .then(data=>console.log(data))
+    // .catch(err=>console.log(err))
     reset();
 }
     else {

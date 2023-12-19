@@ -5,6 +5,8 @@ import Login from "./components/Login"
 import SignUp from "./components/SignUp"
 import CreateSneaker from "./components/CreateSneaker"
 import SneakerView from "./components/SneakerView"
+import CartPage from "./components/Cart"
+import UseContext from"./context/UserContext.js"
 
 
 
@@ -18,6 +20,10 @@ const routes = [
         {
             path: "/",
             element:<Home />
+        },
+        {
+            path: "/currentuser",
+            element:<UseContext />
         },
 
         {
@@ -33,8 +39,12 @@ const routes = [
             element:<CreateSneaker />
         },
         {
+            path:'/cart',
+            element:<CartPage />
+        },
+        {
             path:'/sneaker/:id',
-            element: <SneakerView/>
+            element: <SneakerView />
         }
         ],
     },
