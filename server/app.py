@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, redirect, request
 from flask_restx import Api, Resource, fields
 from config import DevConfig
 from models import Sneaker, User
@@ -7,11 +7,14 @@ from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token,get_jwt_identity, jwt_required  
 from flask_cors import CORS
+import stripe
 # 'pbkdf2:sha256:600000$fPr80Ucsm48KZZ8E$a4dd6c1f35412884a2fe620f2a1683adaa5ec2359a075befb2305362b36965a2'
 
 # creating Flask instance
 app = Flask(__name__)
 app.config.from_object(DevConfig)
+
+stripe.api_key="sk_test_51OOYrSJAAOdYRlZjLjnxkTzx4eEjXkWWDgtFio4uwxN9TShO1D8n1vMa27DxXygABRWekhqTgR3tMxvVzNCCHOYh00Vx2j4Cz4"
 
 CORS(app)
 
@@ -194,6 +197,32 @@ class SneakerResource(Resource):
         sneaker_to_delete.delete()
 
         return sneaker_to_delete
+
+
+# stripe payment Subscription
+YOUR_DOMAIN = 'http://localhost:5000'
+@app.route('/create-subscription-session', methods=['POST'])
+def create_subscription_session():
+    try:
+        # sneaker_to_purchase_Id= CartSneaker.query.get(sneaker_id)
+        # sneaker_price = Sneaker.get(sneaker_to_purchase_Id)
+
+        checkout_session = stripe.checkout.Session.create(
+            line_items=[
+                {
+                    'price': 'price_1OOx91JAAOdYRlZjW8HrudaZ',
+                    'quantity': 1
+                }
+            ],
+            mode='subscription',
+            success_url=YOUR_DOMAIN + "/loading",
+            cancel_url=YOUR_DOMAIN + "/loading"
+        )
+    except Exception as e:
+        return str(e)
+    return redirect(checkout_session.url, code=303)
+
+
 
 
 # model (serializer)

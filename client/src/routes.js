@@ -5,7 +5,7 @@ import Login from "./components/Login"
 import SignUp from "./components/SignUp"
 import CreateSneaker from "./components/CreateSneaker"
 import SneakerView from "./components/SneakerView"
-
+import Subscription from "./components/Subscription"
 
 
 
@@ -34,8 +34,12 @@ const routes = [
         },
         {
             path:'/sneaker/:id',
-            element: <SneakerView/>
-        }
+            element: <SneakerView />
+        },
+        {
+            path:'/create-subscription-session',
+            element: <Subscription />
+        },
         ],
     },
     
